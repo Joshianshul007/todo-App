@@ -1,20 +1,29 @@
-import TaskForm from './components/TaskForm';
-import TaskList from './components/TaskList';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import useAuthStore from './store/useAuthStore';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import './App.css';
 
 function App() {
-  return (
-    <div className="app-container">
-      <header className="app-header glass-panel">
-        <h1>Task Master</h1>
-        <p>Your optimized and beautiful task manager</p>
-      </header>
+  const user = useAuthStore((state) => state.user);
 
-      <main className="main-content">
-        <TaskForm />
-        <TaskList />
-      </main>
-    </div>
+  return (
+    <Routes>
+      <Route 
+        path="/" 
+        element={user ? <Dashboard /> : <Navigate to="/login" replace />} 
+      />
+      <Route 
+        path="/login" 
+        element={!user ? <Login /> : <Navigate to="/" replace />} 
+      />
+      <Route 
+        path="/register" 
+        element={!user ? <Signup /> : <Navigate to="/" replace />} 
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

@@ -2,7 +2,7 @@ const Task = require('../models/Task');
 
 // @desc    Create a new task
 // @route   POST /api/tasks
-// @access  Public (for now)
+// @access  Private
 const createTask = async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -13,7 +13,8 @@ const createTask = async (req, res) => {
 
     const task = await Task.create({
       title,
-      description
+      description,
+      user: req.user.id
     });
 
     res.status(201).json({
@@ -28,11 +29,11 @@ const createTask = async (req, res) => {
 
 // @desc    Get all tasks
 // @route   GET /api/tasks
-// @access  Public
+// @access  Private
 const getTasks = async (req, res) => {
   try {
-    // Find all tasks, sorted by newest first for better UX
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    // Find all tasks for this specific user, sorted by newest first for better UX
+    const tasks = await Task.find({ user: req.user.id }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
