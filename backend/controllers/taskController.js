@@ -46,7 +46,40 @@ const getTasks = async (req, res) => {
   }
 };
 
+// @desc    Update a task (toggle completed)
+// @route   PUT /api/tasks/:id
+// @access  Private
+const updateTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+    // Make sure the logged-in user owns this task
+    if (task.user.toString() !== req.user.id) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      req.params.id,
+      { completed: !task.completed },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedTask
+    });
+  } catch (error) {
+    console.error('Error updating task:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
 module.exports = {
   createTask,
-  getTasks
+  getTasks,
+  updateTask
 };

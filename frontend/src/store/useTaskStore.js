@@ -39,6 +39,28 @@ const useTaskStore = create((set) => ({
     }
   },
 
+  toggleTask: async (taskId) => {
+    // Optimistic update: flip locally first for instant UI feedback
+    set((state) => ({
+      tasks: state.tasks.map((t) =>
+        t._id === taskId ? { ...t, completed: !t.completed } : t
+      )
+    }));
+    try {
+      const token = useAuthStore.getState().user?.token;
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.put(`${API_URL}/${taskId}`, {}, config);
+    } catch (error) {
+      // Revert on failure
+      set((state) => ({
+        tasks: state.tasks.map((t) =>
+          t._id === taskId ? { ...t, completed: !t.completed } : t
+        ),
+        error: error.response?.data?.message || error.message
+      }));
+    }
+  },
+
   clearTasks: () => set({ tasks: [] })
 }));
 
