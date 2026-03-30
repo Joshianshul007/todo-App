@@ -10,9 +10,24 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Database connection
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/todoapp');
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+connectDB();
+
 // Routes
+app.use('/api/tasks', require('./routes/taskRoutes'));
+
 app.get('/', (req, res) => {
-    res.send('MERN Backend Initialized');
+    res.send('MERN Backend Initialized and Running');
 });
 
 // Start the server
