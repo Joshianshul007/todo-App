@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    },
     title: {
       type: String,
       required: [true, 'Task title is required'],
@@ -21,6 +16,14 @@ const taskSchema = new mongoose.Schema(
     completed: {
       type: Boolean,
       default: false
+    },
+    category: {
+      type: String,
+      enum: ['Work', 'Personal', 'Urgent', 'Other'],
+      default: 'Other'
+    },
+    dueDate: {
+      type: Date
     }
   },
   { timestamps: true }

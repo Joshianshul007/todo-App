@@ -1,29 +1,26 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import useAuthStore from './store/useAuthStore';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
 import './App.css';
 
 function App() {
-  const user = useAuthStore((state) => state.user);
-
   return (
-    <Routes>
-      <Route 
-        path="/" 
-        element={user ? <Dashboard /> : <Navigate to="/login" replace />} 
-      />
-      <Route 
-        path="/login" 
-        element={!user ? <Login /> : <Navigate to="/" replace />} 
-      />
-      <Route 
-        path="/register" 
-        element={!user ? <Signup /> : <Navigate to="/" replace />} 
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>To-Do List</h1>
+        <p>A simple way to manage your tasks</p>
+      </header>
+      
+      <main className="app-main">
+        <div className="card form-container">
+          <TaskForm />
+        </div>
+        
+        <div className="card list-container">
+          <h2>Your Tasks</h2>
+          <TaskList />
+        </div>
+      </main>
+    </div>
   );
 }
 

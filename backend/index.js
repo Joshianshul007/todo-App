@@ -25,7 +25,6 @@ connectDB();
 
 // Routes
 app.use('/api/tasks', require('./routes/taskRoutes'));
-app.use('/api/auth', require('./routes/authRoutes'));
 
 app.get('/', (req, res) => {
     res.send('MERN Backend Initialized and Running');

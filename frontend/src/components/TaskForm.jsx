@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import useTaskStore from '../store/useTaskStore';
-import './TaskForm.css'; // Let's isolate styles if needed, or rely on index.css
+import './TaskForm.css';
 
-const TaskForm = () => {
+const CATEGORIES = ['Other', 'Work', 'Personal', 'Urgent'];
+
+const TaskForm = ({ onAdded }) => {
   const addTask = useTaskStore((state) => state.addTask);
   const loading = useTaskStore((state) => state.loading);
-
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('Other');
+  const [dueDate, setDueDate] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e) => {
@@ -17,43 +20,62 @@ const TaskForm = () => {
       return;
     }
     setErrorMsg('');
-    await addTask({ title, description });
+    await addTask({ title, description, category, dueDate: dueDate || null });
     setTitle('');
     setDescription('');
+    setCategory('Other');
+    setDueDate('');
+    if (onAdded) onAdded();
   };
 
   return (
-    <div className="task-form-card glass-panel">
-      <h2>Create New Task</h2>
-      {errorMsg && <div className="error-badge">{errorMsg}</div>}
-      <form onSubmit={handleSubmit} className="task-form">
-        <div className="input-group">
-          <label htmlFor="title">Title</label>
+    <form onSubmit={handleSubmit} className="task-form-inline">
+      {errorMsg && <div className="error-badge" style={{ marginBottom: '0.75rem' }}>{errorMsg}</div>}
+      <div className="task-form-row">
+        <div className="input-group" style={{ flex: 1.5 }}>
           <input
-            id="title"
             type="text"
-            placeholder="What needs to be done?"
+            placeholder="Task title..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             disabled={loading}
           />
         </div>
-        <div className="input-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            placeholder="Add any additional details (optional)"
+        <div className="input-group" style={{ flex: 2 }}>
+          <input
+            type="text"
+            placeholder="Description (optional)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             disabled={loading}
-            rows="3"
           />
         </div>
-        <button type="submit" className="primary-btn pulse-hover" disabled={loading}>
-          {loading ? 'Adding...' : 'Add Task'}
+      </div>
+      <div className="task-form-row" style={{ marginTop: '0.75rem' }}>
+        <div className="input-group" style={{ flex: 1 }}>
+          <select 
+            value={category} 
+            onChange={(e) => setCategory(e.target.value)}
+            disabled={loading}
+            className="form-select"
+          >
+            {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
+        </div>
+        <div className="input-group" style={{ flex: 1 }}>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            disabled={loading}
+            className="form-date"
+          />
+        </div>
+        <button type="submit" className="primary-btn" disabled={loading}>
+          {loading ? '...' : 'Add Task'}
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 
